@@ -43,6 +43,9 @@
   - Update `irmin` CLI to raise an exception when an invalid/non-existent
     config file is specified (#1413, @zshipko)
 
+- **irmin-pack**
+  - Added a `irmin-pack.mem` package (#1436, @icristescu, @craigfe)
+
 ### Changed
 
 - **irmin**
@@ -136,6 +139,9 @@
     (#1377, @samoht)
   - Moved `Irmin_pack.Store.Atomic_write` into its own module (#1378, @samoht)
   - All the types in `inode.ml` are now derived automatically (#1451, @samoht, @mattiasdrp)
+  - `Checks.Reconstruct_index.run` now takes an optional `index_log_size`
+    parameter for customising the interval between merges during
+    reconstruction. (#1459, @CraigFe)
 
 ## 2.6.0 (2021-04-13)
 

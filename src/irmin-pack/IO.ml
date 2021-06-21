@@ -48,7 +48,7 @@ module Unix : S = struct
     else
       let offset = t.offset in
       Buffer.clear t.buf;
-      Raw.unsafe_write t.raw ~off:t.flushed buf;
+      Raw.unsafe_write t.raw ~off:t.flushed buf 0 (String.length buf);
       Raw.Offset.set t.raw offset;
       (* concurrent append might happen so here t.offset might differ
          from offset *)
@@ -73,17 +73,19 @@ module Unix : S = struct
   let set t ~off buf =
     if t.readonly then raise S.RO_not_allowed;
     unsafe_flush t;
-    Raw.unsafe_write t.raw ~off:(header t.version ++ off) buf;
+    let buf_len = String.length buf in
+    Raw.unsafe_write t.raw ~off:(header t.version ++ off) buf 0 buf_len;
     assert (
-      let len = Int63.of_int (String.length buf) in
+      let len = Int63.of_int buf_len in
       let off = header t.version ++ off ++ len in
       off <= t.flushed)
 
-  let read t ~off buf =
+  let read_buffer t ~off ~buf ~len =
     let off = header t.version ++ off in
     assert (if not t.readonly then off <= t.flushed else true);
-    Raw.unsafe_read t.raw ~off ~len:(Bytes.length buf) buf
+    Raw.unsafe_read t.raw ~off ~len buf
 
+  let read t ~off buf = read_buffer t ~off ~buf ~len:(Bytes.length buf)
   let offset t = t.offset
 
   let force_offset t =
@@ -261,7 +263,9 @@ module Unix : S = struct
           assert (read <= buf_len);
           let to_write = if read < buf_len then Bytes.sub buf 0 read else buf in
           let () =
-            Raw.unsafe_write dst ~off:dst_off (Bytes.unsafe_to_string to_write)
+            Raw.unsafe_write dst ~off:dst_off
+              (Bytes.unsafe_to_string to_write)
+              0 read
           in
           progress (Int63.of_int read);
           (inner [@tailcall]) ~src_off:(src_off + read) ~dst_off:(dst_off + read)
@@ -304,12 +308,6 @@ module Unix : S = struct
         Fmt.invalid_arg "[%s] Unsupported migration path: %a → %a"
           (Filename.basename src.file)
           Version.pp src_v Version.pp dst_v
-
-  let read_buffer ~chunk ~off src =
-    let off = header src.version ++ off in
-    let tmp = Bytes.create chunk in
-    let len = Raw.unsafe_read src.raw ~off ~len:chunk tmp in
-    Bytes.sub_string tmp 0 len
 end
 
 module Cache = struct

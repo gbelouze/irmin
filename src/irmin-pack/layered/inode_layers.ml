@@ -22,10 +22,10 @@ module Make
     (H : Irmin.Hash.S)
     (Maker : S.Content_addressable_maker
                with type key = H.t
-                and type index = Index.Make(H).t)
+                and type index := Index.Make(H).t)
     (Node : Irmin.Private.Node.S with type hash = H.t) =
 struct
-  type index = Maker.index
+  type index = Index.Make(H).t
 
   module Internal = Irmin_pack.Inode.Make_internal (Conf) (H) (Node)
   module P = Maker.Make (Internal.Raw)
@@ -106,9 +106,6 @@ struct
     | Upper -> P.copy (Upper, dst) t "Node"
 
   let check = P.check
-
-  let decode_bin ~dict ~hash buff off =
-    Internal.Raw.decode_bin ~dict ~hash buff off |> fst
-
+  let decode_bin_length = Internal.Raw.decode_bin_length
   let integrity_check_inodes _ _ = failwith "TODO"
 end
