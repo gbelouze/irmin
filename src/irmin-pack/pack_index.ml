@@ -52,8 +52,8 @@ module Make (K : Irmin.Hash.S) = struct
     let encoded_size = (64 / 8) + (32 / 8) + 1
   end
 
-  module Stats = Index.Stats
-  module Index = Index_unix.Make (Key) (Val) (Index.Cache.Unbounded)
+  module Stats = Btree_index.Stats
+  module Index = Btree_index.Make (Key) (Val)
   include Index
 
   (** Implicit caching of Index instances. TODO: Require the user to pass Pack

@@ -197,12 +197,12 @@ module Stat_trace = struct
       new_merge_durations : float list;
     }
     [@@deriving repr]
-    (** Stats extracted from [Index.Stats.get ()].
+    (** Stats extracted from [Btree_index.Stats.get ()].
 
         [new_merge_durations] is not just a mirror of
-        [Index.Stats.merge_durations], it only contains the new entries since
-        the last time it was recorded. This list is always empty when in the
-        header. *)
+        [Btree_index.Stats.merge_durations], it only contains the new entries
+        since the last time it was recorded. This list is always empty when in
+        the header. *)
 
     type gc = {
       minor_words : float;

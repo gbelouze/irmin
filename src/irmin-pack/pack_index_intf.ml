@@ -17,7 +17,7 @@
 open! Import
 
 module type S = sig
-  include Index.S with type value = int63 * int * Pack_value.Kind.t
+  include Btree_index.S with type value = int63 * int * Pack_value.Kind.t
 
   val v :
     ?flush_callback:(unit -> unit) ->
@@ -34,7 +34,7 @@ module type S = sig
   val close : t -> unit
   val merge : t -> unit
 
-  module Stats = Index.Stats
+  module Stats = Btree_index.Stats
 end
 
 module type Sigs = sig

@@ -67,7 +67,7 @@ module Make_stat (Store : Irmin.KV) = struct
         }
 
     let index prev_merge_durations =
-      let open Index.Stats in
+      let open Btree_index.Stats in
       let v = get () in
       let new_merge_durations =
         if v.merge_durations == prev_merge_durations then []
@@ -159,7 +159,7 @@ module Make_stat (Store : Irmin.KV) = struct
           timeofday = Unix.gettimeofday ();
           initial_stats =
             Bag_of_stats.create store_path
-              Index.Stats.((get ()).merge_durations);
+              Btree_index.Stats.((get ()).merge_durations);
         }
     in
     let dummy_commit_before =
@@ -170,7 +170,7 @@ module Make_stat (Store : Irmin.KV) = struct
       writer = Def.create_file path header;
       store_path;
       t0 = Mtime_clock.counter ();
-      prev_merge_durations = Index.Stats.((get ()).merge_durations);
+      prev_merge_durations = Btree_index.Stats.((get ()).merge_durations);
       commit_before = dummy_commit_before;
     }
 
@@ -223,7 +223,7 @@ module Make_stat (Store : Irmin.KV) = struct
     let stats_before =
       Bag_of_stats.create t.store_path t.prev_merge_durations
     in
-    t.prev_merge_durations <- Index.Stats.((get ()).merge_durations);
+    t.prev_merge_durations <- Btree_index.Stats.((get ()).merge_durations);
     let+ store_before = create_store_before tree in
     t.commit_before <- (stats_before, store_before)
 
@@ -231,7 +231,7 @@ module Make_stat (Store : Irmin.KV) = struct
     let duration = Mtime_clock.count t.t0 |> Mtime.Span.to_s in
     let duration = duration |> Int32.bits_of_float in
     let stats_after = Bag_of_stats.create t.store_path t.prev_merge_durations in
-    t.prev_merge_durations <- Index.Stats.((get ()).merge_durations);
+    t.prev_merge_durations <- Btree_index.Stats.((get ()).merge_durations);
     let+ store_after = create_store_after tree in
     let op =
       `Commit

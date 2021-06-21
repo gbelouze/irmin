@@ -22,7 +22,7 @@ let src = Logs.Src.create "irmin.pack.io" ~doc:"IO for irmin-pack"
 module Log = (val Logs.src_log src : Logs.LOG)
 
 module Unix : S = struct
-  module Raw = Index_unix.Private.Raw
+  module Raw = Btree_index.Raw
 
   type t = {
     file : string;
