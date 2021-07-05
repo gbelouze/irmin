@@ -98,7 +98,7 @@ module Bench_suite (Store : Store) = struct
       else
         let* c' = checkout_and_commit repo (Store.Commit.hash c) f in
         let* () = on_commit i (Store.Commit.hash c') in
-        prog Int64.one;
+        prog 1;
         aux c' (i + 1)
     in
     aux c 0
@@ -390,6 +390,7 @@ let main () ncommits ncommits_trace suite_filter inode_config store_type
       empty_blobs;
     }
   in
+  Memtrace.trace_if_requested ();
   Printexc.record_backtrace true;
   Random.self_init ();
   FSHelper.rm_dir config.store_dir;
