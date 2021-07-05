@@ -35,7 +35,7 @@ let reporter ?(prefix = "") () =
     in
     msgf @@ fun ?header ?tags fmt -> with_stamp header tags k fmt
   in
-  { Logs.report }
+  { Logs.report } |> Progress.instrument_logs_reporter
 
 let setup_log style_renderer level =
   Fmt_tty.setup_std_outputs ?style_renderer ();
