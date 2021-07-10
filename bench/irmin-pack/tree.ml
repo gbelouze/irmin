@@ -367,6 +367,7 @@ let main () ncommits ncommits_trace suite_filter inode_config store_type
     freeze_commit path_conversion depth width nchain_trees nlarge_trees
     commit_data_file artefacts_dir keep_store keep_stat_trace no_summary
     empty_blobs =
+  let _ = Memtrace.trace_if_requested () in
   let default = match suite_filter with `Quick -> 10000 | _ -> 13315 in
   let ncommits_trace = Option.value ~default ncommits_trace in
   let config =
